@@ -53,6 +53,10 @@ namespace EddiUI
             DisableIpaCheckbox.IsChecked = speechServiceConfiguration.DisableIpa;
             enableIcaoCheckbox.IsChecked = speechServiceConfiguration.EnableIcao;
 
+            openAiTtsEnabled.IsChecked = speechServiceConfiguration.OpenAiConfiguration.Enabled;
+            openAiTtsEndpoint.Text = speechServiceConfiguration.OpenAiConfiguration.Endpoint;
+            openAiTtsApiKey.Text = speechServiceConfiguration.OpenAiConfiguration.ApiKey;
+
             ttsTestShipDropDown.ItemsSource = ShipDefinitions.ShipModels; // already sorted
             ttsTestShipDropDown.Text = "Adder";
         }
@@ -123,6 +127,16 @@ namespace EddiUI
             ttsUpdated();
         }
 
+        private void openAiTtsUpdated(object sender, RoutedEventArgs e)
+        {
+            ttsUpdated();
+        }
+
+        private void openAiTtsEndpointUpdated(object sender, TextChangedEventArgs e)
+        {
+            ttsUpdated();
+        }
+
         /// <summary>
         /// fetch the Text-to-Speech Configuration and write it to File
         /// </summary>
@@ -139,7 +153,13 @@ namespace EddiUI
                 EffectsLevel = (int)ttsEffectsLevelSlider.Value,
                 DistortOnDamage = ttsDistortCheckbox.IsChecked ?? false,
                 DisableIpa = DisableIpaCheckbox.IsChecked ?? false,
-                EnableIcao = enableIcaoCheckbox.IsChecked ?? false
+                EnableIcao = enableIcaoCheckbox.IsChecked ?? false,
+                OpenAiConfiguration = new OpenAiConfiguration
+                {
+                    Enabled = openAiTtsEnabled.IsChecked ?? false,
+                    Endpoint = openAiTtsEndpoint.Text,
+                    ApiKey = openAiTtsApiKey.Text
+                }
             };
             SpeechService.Instance.Configuration = speechConfiguration;
             speechConfiguration.ToFile();

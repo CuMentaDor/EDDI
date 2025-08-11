@@ -31,6 +31,9 @@ namespace EddiSpeechService
         [JsonProperty("enableicao")]
         public bool EnableIcao { get; set; }
 
+        [JsonProperty("openAiConfiguration")]
+        public OpenAiConfiguration OpenAiConfiguration { get; set; } = new OpenAiConfiguration();
+
         [JsonIgnore]
         private string dataPath;
 

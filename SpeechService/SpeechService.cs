@@ -48,6 +48,7 @@ namespace EddiSpeechService
 
         private readonly SystemSpeechSynthesizer systemSpeechSynth;
         private readonly WindowsMediaSynthesizer windowsMediaSynth;
+        private readonly OpenAiSpeechSynthesizer openAiSpeechSynth;
 
         public List<VoiceDetails> allVoices { get; }
         public List<string> allvoices => allVoices
@@ -126,6 +127,7 @@ namespace EddiSpeechService
                 {
                     windowsMediaSynth?.Dispose();
                 }
+                openAiSpeechSynth?.Dispose();
             }
         }
 
@@ -164,6 +166,16 @@ namespace EddiSpeechService
                 Logging.Error(
                     $"Unable to initialize System.Speech.Synthesis.SpeechSynthesizer, {RuntimeInformation.OSDescription}",
                     e );
+            }
+
+            // Prep the OpenAI synthesizer
+            try
+            {
+                openAiSpeechSynth = new OpenAiSpeechSynthesizer(ref voiceStore, Configuration);
+            }
+            catch (Exception e)
+            {
+                Logging.Error("Unable to initialize OpenAiSpeechSynthesizer", e);
             }
 
             // Sort results alphabetically by voice name
@@ -447,6 +459,10 @@ namespace EddiSpeechService
             if ( voiceDetails.synthType is nameof( Windows.Media ) && IsWindowsMediaSynthesizerSupported() )
             {
                 return windowsMediaSynth?.Speak( voiceDetails, speech, Configuration );
+            }
+            if ( voiceDetails.synthType is "OpenAI" )
+            {
+                return openAiSpeechSynth?.Speak( voiceDetails, speech, Configuration );
             }
             throw new NotImplementedException( $"{nameof( voiceDetails )} is referencing a synthType which has not been configured." );
         }
