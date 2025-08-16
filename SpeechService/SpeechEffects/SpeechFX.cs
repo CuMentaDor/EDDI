@@ -29,6 +29,7 @@ namespace EddiSpeechService.SpeechEffects
                 }
 
                 var signal = new DiscreteSignal( source.WaveFormat.SampleRate, trimmedBuffer );
+                signal = new DiscreteSignal( signal.SamplingRate, NormalizeSamples( signal, 100 ) );
                 var sampleRate = source.WaveFormat.SampleRate;
                 var damageAdjustedFxLevel = DamageAdjustedFxLevel( distortionLevel, fxLevel );
 
@@ -106,7 +107,7 @@ namespace EddiSpeechService.SpeechEffects
             if ( distortionLevel != 0 )
             {
                 var inputGain = distortionLevel / 100f * 30;
-                var outputGain = distortionLevel / 100f * -25;
+                var outputGain = 1; //distortionLevel / 100f * -25;
                 var distortion = new DistortionEffect( DistortionMode.HardClipping, inputGain, outputGain );
                 distortion.WetDryMix( 0.9f );
                 signal = distortion.ApplyTo( signal );
